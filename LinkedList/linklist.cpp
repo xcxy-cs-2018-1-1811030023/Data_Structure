@@ -1,11 +1,20 @@
-//带头结点的单链表
+/*
+    单链表分为带头节点的，和不带头结点的两种形式。
+    带头结点的单链表：由头指针指向第0个结点（也就是头结点，这个结点不存储数据，其next指针指向第1个结点，也就是从第1个结点开始存储数据）
+    不带头结点的单链表：由头指针指向第1个结点，头指针指向的结点就是数据存储的开始结点。
+    平常使用中，常用带头结点的单链表，因为此类型操作起来更简单。当然考试，具体还是要看题目要求了。
+    **/
+
 #include <stdio.h>
 #include <malloc.h>
+typedef int ElemType;
 typedef struct LNode{                   //定义单链表结点类型
     ElemType data;              //每个节点存放一个数据元素
     struct LNode *next;         //指针指向下一个节点
-}LNode,*LinkList;               /*LNode和*LinkList其实语法作用都是相同的，但是使用在程序中含义不一样，LNode表示的是链表中的结点
-                                *LinkList表示的是链表的头指针，代表一个链表*/
+}LNode,*LinkList;               /*
+                                    LNode和*LinkList其实语法作用都是相同的，但是使用在程序中含义不一样，LNode表示的是链表中的结点
+                                    *LinkList表示的是链表的头指针，代表一个链表。这样代码具有易读性。
+                                */
 
 bool ListInsert(LinkList &L,int i,ElemType e){          //按位序插入，在第i个位置插入元素e（带头结点）
     if(i<1)
@@ -31,6 +40,8 @@ bool ListInsert(LinkList &L,int i,ElemType e){          //按位序插入，在�
     return InsertNextNode(p,e);
 }
 
+
+/*具体是带头结点，还是不带头结点还是要根据题目要求
 bool ListInsert(LinkList &L,,int i,ElemType e){         //按位序插入，在第i个位置插入元素饿e（不带头结点）
     if(i<1)
         return false;
@@ -56,9 +67,12 @@ bool ListInsert(LinkList &L,,int i,ElemType e){         //按位序插入，在�
     p->next=s;
     return true;                                    //插入成功
 }
+*/
+
+
 //由于单链表的链接指针只能往后寻找，如果给定的插入结点p的话，插入后，p往后的结点都是可以知道的，但是p之前的结点就莫法了
 bool InsertNextNode(LNode *p,ElemType e){           //后插操作；在p结点之后插入元素e
-    if(p==NULL)                                     //考虑到非法情况，提高健壮性
+    if(p==NULL)                                     //考虑到非法情况，提高健壮性，因为在其他函数中，可能会调用这个函数，而传入的指针参数可能是空指针NULL
         return false;
     LNode *s=(LNode *)malloc(sizeof(LNode));
     if(s==NULL)                                     //内存分配失败，考虑到小概率的某些情况下有可能分配失败（如内存空间不足）
@@ -127,4 +141,57 @@ LNode *GetElem(LinkList L,int i){                   //按位查找，返回第i�
         j++;
     }
     return p;
+}
+
+LNode *LocateElem(LinkList L,ElemType){//按值查找
+    LNode *p=L->next;                   //从第一个结点开始查找数据域为e的结点
+    while(p!=NULL && p->data!=e)
+        p=p->next;
+    return p;
+}
+
+int Length(LinkList L){//求表的长度（带头结点）
+    int len=0;
+    LNode *p=L;
+    while(p->next!=NULL){
+        p=p->next;
+        len++;
+    }
+    return len;
+}
+
+//尾插法建立单链表（带头结点）
+LinkList List_TailInsert(LinkList &L){      //正向建立单链表
+    int x;                                   //要插入的元素数据域的值
+    L=(LinkList)malloc(sizeof(LNode));         //初始化空表（建立头结点）
+    L->next=NULL;                               //虽然这里不影响，但是我们要养成好习惯，只要是初始化单链表，都先把头指针指向NULL
+    LNode *s,*r=L;                             //r为表尾元素
+    scanf("%d",&x);                             //输入结点的值
+    while(x!=8888){                             //输入8888表示结束
+                                                //在r结点之后插入元素x
+        s=(LNode*)malloc(sizeof(LNode));
+        s->data=x;
+        r->next=s;
+        r=s;                                    //r指向新的表尾结点（永远保持r指向最后一个结点
+        scanf("%d",&x);
+    }
+    r->next=NULL;                               //尾结点指针置空
+    return L;
+}
+
+//头插法建立单链表（头插法的重要应用：链表的逆置
+LinkList List_HeadInsert(LinkList &L){//逆向建立单链表
+    LNode *s;
+    int x;
+    L=(LinkList)malloc(sizeof(LNode));//建立头结点
+    L->next=NULL;                       //初始为空链表
+    scanf("%d",&x);                      //输入结点的值
+    while(x!=8888){
+        s=(LNode*)malloc(sizeof(LNode));//创建新的结点
+        s->data=x;
+        s->next=L->next;
+        L->next=s;                      //将新结点插入表中，L为头指针
+        scanf("%d",&x);
+    }
+    return L;
 }
